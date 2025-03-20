@@ -1,0 +1,64 @@
+import pygame
+import random
+
+# Initialize pygame
+pygame.init()
+
+# Game Constants
+WIDTH, HEIGHT = 500, 600
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+BLOCK_SIZE = 50
+PLAYER_SPEED = 5
+ENEMY_SPEED = 5
+
+# Set up display
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Dodge the Blocks!")
+
+# Player setup
+player = pygame.Rect(WIDTH // 2, HEIGHT - 70, BLOCK_SIZE, BLOCK_SIZE)
+
+# Enemy setup
+enemy_size = BLOCK_SIZE
+enemy = pygame.Rect(random.randint(0, WIDTH - enemy_size), 0, enemy_size, enemy_size)
+
+# Game loop
+running = True
+clock = pygame.time.Clock()
+
+while running:
+    screen.fill(WHITE)
+
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Player movement
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT] and player.x > 0:
+        player.x -= PLAYER_SPEED
+    if keys[pygame.K_RIGHT] and player.x < WIDTH - BLOCK_SIZE:
+        player.x += PLAYER_SPEED
+
+    # Enemy movement
+    enemy.y += ENEMY_SPEED
+    if enemy.y > HEIGHT:  # Reset enemy position
+        enemy.y = 0
+        enemy.x = random.randint(0, WIDTH - enemy_size)
+
+    # Collision detection
+    if player.colliderect(enemy):
+        print("Game Over!")
+        running = False
+
+    # Draw player and enemy
+    pygame.draw.rect(screen, BLUE, player)
+    pygame.draw.rect(screen, RED, enemy)
+
+    pygame.display.update()
+    clock.tick(30)  # Control game speed
+
+pygame.quit()
